@@ -27,9 +27,7 @@ class TextFieldDelegate: UIViewController, UITextFieldDelegate {
             BottomTextField.delegate = self
             TopTextField.defaultTextAttributes = textAttributes
         BottomTextField.defaultTextAttributes = textAttributes
-            
         textField.textAlignment = .center
-        
         TopTextField.text = "TOP"
         BottomTextField.text = "BOTTOM"
         }

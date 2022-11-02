@@ -12,6 +12,9 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
     let imagePickerDelegate = ImagePickerDelegate()
     let textFieldDelegate = TextFieldDelegate()
 
+    @IBOutlet weak var CameraButton: UIBarButtonItem!
+    @IBOutlet weak var NavigationBar: UINavigationBar!
+    @IBOutlet weak var ShareButton: UIBarButtonItem!
     @IBOutlet weak var TopTextField: UITextField!
     @IBOutlet weak var BottomTextField: UITextField!
     @IBOutlet weak var ImagePickerView: UIImageView!
@@ -26,13 +29,32 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
         
         override func viewDidLoad() {
             super.viewDidLoad()
-            TopTextField.delegate = self
-            BottomTextField.delegate = self
-            TopTextField.defaultTextAttributes = textAttributes
-            BottomTextField.defaultTextAttributes = textAttributes
-            TopTextField.textAlignment = .center
-            BottomTextField.textAlignment = .center
+            prepareTextField(textField: BottomTextField,defaultText: "BOTTOM")
+            prepareTextField(textField: TopTextField,defaultText: "TOP")
+            ShareButton.isEnabled = false
+            CameraButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
+#if targetEnvironment(simulator)
+CameraButton.isEnabled = false
+#else
+CameraButton.isEnabled = true
+#endif
+            
         }
+    func prepareTextField(textField: UITextField, defaultText: String) {
+        textField.delegate = self
+        textField.defaultTextAttributes = textAttributes
+        textField.textAlignment = .center
+        textField.text = defaultText
+    }
+    override func viewWillAppear(_ animated: Bool) {
+           super.viewWillAppear(animated)
+           subscribeToKeyboardNotifications()
+       }
+      
+    override func viewWillDisappear(_ animated: Bool) {
+           super.viewWillDisappear(animated)
+           unsubscribeToKeyboardNotifications()
+       }
     
     @IBAction func pickAnImage(_ sender: Any) {
         let pickerController = UIImagePickerController()
@@ -47,12 +69,14 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
             imagePicker.delegate = self
         imagePicker.sourceType = .camera
         present(imagePicker, animated: true, completion: nil)
+        
         }
    
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
             guard let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage else { return }
             ImagePickerView.image = image
             picker.dismiss(animated: true)
+        ShareButton.isEnabled = true
         }
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
@@ -78,6 +102,17 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
         let keyboardSize = userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! NSValue // of CGRect
         return keyboardSize.cgRectValue.height
     }
+    
+    @IBAction func shareImage(_ sender: Any) {
+        let sharedImage = generateMemedImage()
+        let controller = UIActivityViewController(activityItems: [sharedImage], applicationActivities: nil)
+        controller.completionWithItemsHandler = {(activityType: UIActivity.ActivityType?, completed: Bool, returnedItems: [Any]?, error: Error?) in
+            if completed && error == nil {
+                self.save()
+            }
+        }
+        present(controller,animated: true, completion: nil)
+    }
    
     var origImage: UIImageView!
     var meme: Meme!
@@ -90,14 +125,18 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
     //--------------------------
     func generateMemedImage() -> UIImage {
     //--------------------------
-    // TODO: Hide toolbar and navbar
+        NavigationBar.isHidden = true
+        NavigationItem.isHidden = true
     // Render view to an image
     UIGraphicsBeginImageContext(self.view.frame.size)
     view.drawHierarchy(in: self.view.frame, afterScreenUpdates: true)
     let memedImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
     UIGraphicsEndImageContext()
-    // TODO: Show toolbar and navbar
+        NavigationBar.isHidden = false
+        NavigationItem.isHidden = false
+        dismiss(animated: true, completion: nil)
     return memedImage
+        
     } /* generateMemedImage */
     //--------------------------
     func save() {
