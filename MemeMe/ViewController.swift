@@ -57,19 +57,18 @@ CameraButton.isEnabled = true
        }
     
     @IBAction func pickAnImage(_ sender: Any) {
-        let pickerController = UIImagePickerController()
-        pickerController.delegate = self
-        pickerController.sourceType = .photoLibrary
-        present(pickerController, animated: true, completion: nil)
-    }
-   
-    @IBAction func pickAnImageFromCamera(_ sender: Any) {
-
+            pick(sourceType: .photoLibrary)
+        }
+       
+        @IBAction func pickAnImageFromCamera(_ sender: Any) {
+            pick(sourceType: .camera)
+            }
+        
+        func pick(sourceType: UIImagePickerController.SourceType ){
             let imagePicker = UIImagePickerController()
             imagePicker.delegate = self
-        imagePicker.sourceType = .camera
-        present(imagePicker, animated: true, completion: nil)
-        
+            imagePicker.SourceType = sourceType
+            present(imagePicker, animated: true, completion: nil)
         }
    
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
