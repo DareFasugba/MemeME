@@ -65,10 +65,10 @@ CameraButton.isEnabled = true
             }
         
         func pick(sourceType: UIImagePickerController.SourceType ){
-            let imagePicker = UIImagePickerController()
-            imagePicker.delegate = self
-            imagePicker.SourceType = sourceType
-            present(imagePicker, animated: true, completion: nil)
+            let ImagePicker = UIImagePickerController()
+            ImagePicker.delegate = self
+            ImagePicker.sourceType = sourceType
+            present(ImagePicker, animated: true, completion: nil)
         }
    
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
