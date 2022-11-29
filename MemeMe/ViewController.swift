@@ -115,12 +115,6 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
     
     var origImage: UIImageView!
     var meme: Meme!
-    struct Meme {
-        var topTextField: String = ""
-        var bottomTextField: String = ""
-        var originalImage: UIImage!
-        var memedImage: UIImage!
-    } /* struct Meme s*/
     //--------------------------
     func generateMemedImage() -> UIImage {
         //--------------------------
@@ -133,25 +127,24 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate & UINavi
         UIGraphicsEndImageContext()
         NavigationBar.isHidden = false
         NavigationItem.isHidden = false
-        dismiss(animated: true, completion: nil)
         return memedImage
         
     } /* generateMemedImage */
     //--------------------------
-    func save() {
         //--------------------------
         // Create the meme
         func save() {
             // Create the meme
-            let meme = Meme(top: self.TopTextField.text!, bottom: self.BottomTextField.text!, image: self.ImagePickerView.image!, memedImage: self.generateMemedImage())
+            let meme = Meme(topTextField: self.TopTextField.text!, bottomTextField: self.BottomTextField.text!, originalImage: self.ImagePickerView.image!, memedImage: self.generateMemedImage())
             
             // Add it to the memes array in the Application Delegate
             let object = UIApplication.shared.delegate
             let appDelegate = object as! AppDelegate
             appDelegate.memes.append(meme)
+            dismiss(animated: true, completion: nil)
         }
     }
-}
+
     
 
     
